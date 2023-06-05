@@ -1,0 +1,201 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node {
+    string keyword;
+    string meaning;
+    Node* left;
+    Node* right;
+};
+
+class Dictionary {
+private:
+    Node* root;
+
+    Node* createNode(const string& keyword, const string& meaning) {
+        Node* newNode = new Node();
+        newNode->keyword = keyword;
+        newNode->meaning = meaning;
+        newNode->left = nullptr;
+        newNode->right = nullptr;
+        return newNode;
+    }
+
+    Node* insertRecursive(Node* root, const string& keyword, const string& meaning) {
+        if (root == nullptr) {
+            root = createNode(keyword, meaning);
+            return root;
+        }
+
+        if (keyword < root->keyword) {
+            root->left = insertRecursive(root->left, keyword, meaning);
+        } else if (keyword > root->keyword) {
+            root->right = insertRecursive(root->right, keyword, meaning);
+        } else {
+            // Keyword already exists, update the meaning
+            root->meaning = meaning;
+        }
+
+        return root;
+    }
+
+    Node* deleteNode(Node* root, const string& keyword) {
+        if (root == nullptr) {
+            return root;
+        }
+
+        if (keyword < root->keyword) {
+            root->left = deleteNode(root->left, keyword);
+        } else if (keyword > root->keyword) {
+            root->right = deleteNode(root->right, keyword);
+        } else {
+            if (root->left == nullptr) {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            } else if (root->right == nullptr) {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            Node* successor = findMinimum(root->right);
+            root->keyword = successor->keyword;
+            root->meaning = successor->meaning;
+            root->right = deleteNode(root->right, successor->keyword);
+        }
+
+        return root;
+    }
+
+    Node* findMinimum(Node* root) {
+        if (root == nullptr || root->left == nullptr) {
+            return root;
+        }
+
+        return findMinimum(root->left);
+    }
+
+    void inorderTraversal(Node* root, bool ascending) {
+        if (root == nullptr) {
+            return;
+        }
+
+        if (ascending) {
+            inorderTraversal(root->left, ascending);
+            cout << root->keyword << ": " << root->meaning << endl;
+            inorderTraversal(root->right, ascending);
+        } else {
+            inorderTraversal(root->right, ascending);
+            cout << root->keyword << ": " << root->meaning << endl;
+            inorderTraversal(root->left, ascending);
+        }
+    }
+
+    int findMaxComparisons(Node* root, const string& keyword, int comparisons) {
+        if (root == nullptr) {
+            return comparisons;
+        }
+
+        if (keyword < root->keyword) {
+            comparisons++;
+            return findMaxComparisons(root->left, keyword, comparisons);
+        } else if (keyword > root->keyword) {
+            comparisons++;
+            return findMaxComparisons(root->right, keyword, comparisons);
+        } else {
+            comparisons++;
+            return comparisons;
+        }
+    }
+
+public:
+    Dictionary() {
+        root = nullptr;
+    }
+
+    void addKeyword(const string& keyword, const string& meaning) {
+        root = insertRecursive(root, keyword, meaning);
+    }
+
+    void deleteKeyword(const string& keyword) {
+        root = deleteNode(root, keyword);
+    }
+
+    void updateMeaning(const string& keyword, const string& newMeaning) {
+        Node* node = search(root, keyword);
+        if (node != nullptr) {
+            node->meaning = newMeaning;
+        } else {
+            cout << "Keyword not found." << endl;
+        }
+    }
+
+    void displayAscending() {
+        cout << "Dictionary (Ascending Order):" << endl;
+        inorderTraversal(root, true);
+    }
+
+    void displayDescending() {
+        cout << "Dictionary (Descending Order):" << endl;
+        inorderTraversal(root, false);
+    }
+
+    int findMaxComparisons(const string& keyword) {
+        int maxComparisons = findMaxComparisons(root, keyword, 0);
+        return maxComparisons;
+    }
+
+    Node* search(Node* root, const string& keyword) {
+        if (root == nullptr || root->keyword == keyword) {
+            return root;
+        }
+
+        if (keyword < root->keyword) {
+            return search(root->left, keyword);
+        } else {
+            return search(root->right, keyword);
+        }
+    }
+
+    Node* getRoot() {
+        return root;
+    }
+};
+
+int main() {
+    Dictionary dictionary;
+
+    // Add keywords and meanings
+    dictionary.addKeyword("apple", "A fruit");
+    dictionary.addKeyword("banana", "A fruit with a yellow color");
+    dictionary.addKeyword("cat", "A small domesticated carnivorous mammal");
+    dictionary.addKeyword("dog", "A domesticated carnivorous mammal");
+
+    // Display the dictionary in ascending order
+    dictionary.displayAscending();
+
+    // Update the meaning of a keyword
+    dictionary.updateMeaning("banana", "A tropical fruit");
+
+    // Display the dictionary in descending order
+    dictionary.displayDescending();
+
+    // Delete a keyword
+    dictionary.deleteKeyword("cat");
+
+    // Search for a keyword and display the maximum comparisons
+    string keyword = "dog";
+    Node* node = dictionary.search(dictionary.getRoot(), keyword);
+    if (node != nullptr) {
+        cout << "Meaning of '" << keyword << "': " << node->meaning << endl;
+    } else {
+        cout << "Keyword not found." << endl;
+    }
+
+    int maxComparisons = dictionary.findMaxComparisons(keyword);
+    cout << "Maximum comparisons required to find '" << keyword << "': " << maxComparisons << endl;
+
+    return 0;
+}
