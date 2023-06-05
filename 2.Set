@@ -1,0 +1,72 @@
+set1 = set()
+n = int(input("Enter the number of elements to insert in Set A: "))
+for _ in range(n):
+    element = int(input("Enter the element: "))
+    set1.add(element)
+
+set2 = set()
+n = int(input("Enter the number of elements to insert in Set B: "))
+for _ in range(n):
+    element = int(input("Enter the element: "))
+    set2.add(element)
+
+print("Set A:", set1)
+print("Set B:", set2)
+
+
+def contains(s, element):
+    return element in s
+
+
+choice = 1
+while choice != 0:
+    print("\n1. Add\n2. Remove\n3. Contains\n4. Size\n5. Iterator\n6. Intersection\n7. Union\n8. Difference\n9. Subset\n10. Exit")
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        a = 1
+        while a:
+            n = int(input("Enter 1 to insert element in Set A or 2 to insert element in Set B: "))
+            if n == 1:
+                x = int(input("Enter the element to insert in Set A: "))
+                set1.add(x)
+                print("Updated Set A:", set1)
+            elif n == 2:
+                y = int(input("Enter the element to insert in Set B: "))
+                set2.add(y)
+                print("Updated Set B:", set2)
+            else:
+                print("Invalid choice!")
+            a = int(input("Press 1 to insert more or 0 to exit: "))
+
+    elif choice == 2:
+        x = int(input("Enter the element to remove from Set A: "))
+        set1.remove(x)
+        print("Updated Set A:", set1)
+
+    elif choice == 3:
+        x = int(input("Enter the element to check in Set A: "))
+        print(contains(set1, x))
+
+    elif choice == 4:
+        print("Size of Set A:", len(set1))
+
+    elif choice == 5:
+        print("Set A elements:")
+        for element in set1:
+            print(element)
+
+    elif choice == 6:
+        print("Intersection:", set1.intersection(set2))
+
+    elif choice == 7:
+        print("Union:", set1.union(set2))
+
+    elif choice == 8:
+        print("Difference:", set1.difference(set2))  # Elements present in Set A but not in Set B
+
+    elif choice == 9:
+        print("Subset:", set1.issubset(set2))  # Returns True if the elements of Set A are present in Set B and False otherwise
+
+    elif choice == 10:
+        exit()
