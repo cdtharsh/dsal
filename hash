@@ -1,0 +1,69 @@
+import array
+
+class HashTable:
+    def __init__(self, size):
+        self.size = size
+        self.table = [None] * size
+
+    def hash_function(self, key):
+        return key % self.size
+
+    def linear_probing_insert(self, key, value):
+        index = self.hash_function(key)
+        while self.table[index] is not None:
+            index = (index + 1) % self.size
+        self.table[index] = (key, value)
+
+    def quadratic_probing_insert(self, key, value):
+        index = self.hash_function(key)
+        i = 1
+        while self.table[index] is not None:
+            index = (index + i ** 2) % self.size
+            i += 1
+        self.table[index] = (key, value)
+
+    def linear_probing_search(self, key):
+        index = self.hash_function(key)
+        comparisons = 0
+        while self.table[index] is not None:
+            comparisons += 1
+            if self.table[index][0] == key:
+                return comparisons, self.table[index][1]
+            index = (index + 1) % self.size
+        return comparisons, None
+
+    def quadratic_probing_search(self, key):
+        index = self.hash_function(key)
+        i = 1
+        comparisons = 0
+        while self.table[index] is not None:
+            comparisons += 1
+            if self.table[index][0] == key:
+                return comparisons, self.table[index][1]
+            index = (index + i ** 2) % self.size
+            i += 1
+        return comparisons, None
+
+
+def main():
+    n = int(input("Number of clients: "))
+    telephone_book = HashTable(n)
+
+    for _ in range(n):
+        name = input("Enter client name: ")
+        number = int(input("Enter telephone number: "))
+        telephone_book.linear_probing_insert(number, name)  # Change collision resolution technique here
+
+    while True:
+        search_number = int(input("Enter telephone number to search (0 to exit): "))
+        if search_number == 0:
+            break
+
+        comparisons_linear, result_linear = telephone_book.linear_probing_search(search_number)  # Change collision resolution technique here
+        comparisons_quadratic, result_quadratic = telephone_book.quadratic_probing_search(search_number)  # Change collision resolution technique here
+
+        print(f"Linear Probing: {comparisons_linear} comparisons. Result: {result_linear}")
+        print(f"Quadratic Probing: {comparisons_quadratic} comparisons. Result: {result_quadratic}")
+
+
+main()
